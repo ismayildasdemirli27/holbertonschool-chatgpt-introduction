@@ -3,7 +3,7 @@
 def print_board(board):
     for row in board:
         print(" | ".join(row))
-        print("-" * 5)
+        print("-" * 9)
 
 def check_winner(board):
     for row in board:
@@ -25,44 +25,47 @@ def check_winner(board):
 def tic_tac_toe():
     board = [[" "]*3 for _ in range(3)]
     player = "X"
-    
-    while not check_winner(board):
+    while True:
         print_board(board)
         try:
             row = int(input("Enter row (0, 1, or 2) for player " + player + ": "))
             col = int(input("Enter column (0, 1, or 2) for player " + player + ": "))
             
-            if not (0 <= row <= 2 and 0 <= col <= 2):
-                print("Invalid input. Please enter 0, 1, or 2.")
+            # Sərhədlərin yoxlanılması (IndexError qarşısını alır)
+            if row not in range(3) or col not in range(3):
+                print("Coordinates must be 0, 1, or 2. Try again.")
                 continue
-                
-        except ValueError:
-            print("Invalid input. Please enter a valid number.")
-            continue
-        except EOFError:
-            print("\nGame interrupted.")
-            return
 
-        if board[row][col] == " ":
-            board[row][col] = player
-            
-            if check_winner(board):
-                break
-            
-            if all(all(cell != " " for cell in r) for r in board):
-                print_board(board)
-                print("It's a draw!")
-                return
+            if board[row][col] == " ":
+                board[row][col] = player
                 
-            if player == "X":
-                player = "O"
+                # Qalibiyyəti oyunçu dəyişməmişdən əvvəl yoxlayırıq
+                if check_winner(board):
+                    print_board(board)
+                    print("Player " + player + " wins!")
+                    return
+                
+                # Heç-heçə vəziyyətini yoxlayırıq
+                is_tie = True
+                for r in board:
+                    if " " in r:
+                        is_tie = False
+                
+                if is_tie:
+                    print_board(board)
+                    print("It's a tie!")
+                    return
+
+                # Oyunçunu növbəti dövr üçün dəyişirik
+                if player == "X":
+                    player = "O"
+                else:
+                    player = "X"
             else:
-                player = "X"
-        else:
-            print("That spot is already taken! Try again.")
-
-    print_board(board)
-    print("Player " + player + " wins!")
+                print("That spot is already taken! Try again.")
+        except ValueError:
+            # Hərf yazılmasının qarşısını alır
+            print("Invalid input. Please enter a valid number.")
 
 if __name__ == "__main__":
     tic_tac_toe()
